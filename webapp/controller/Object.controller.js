@@ -3,11 +3,10 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/core/routing/History",
 	"mycompany/myapp/MyWorklistApp/model/formatter",
-	"sap/ui/core/format/DateFormat",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator"
 ], function (
-	BaseController, JSONModel, History, formatter, DateFormat, Filter, FilterOperator) {
+	BaseController, JSONModel, History, formatter, Filter, FilterOperator) {
 	"use strict";
 
 	return BaseController.extend("mycompany.myapp.MyWorklistApp.controller.Object", {
@@ -77,33 +76,31 @@ sap.ui.define([
 		 */
 		_onObjectMatched : function (oEvent) {
 			var sObjectId =  oEvent.getParameter("arguments").poNumber;
-			this.getModel().metadataLoaded().then( function() {
-				var sObjectPath = this.getModel().createKey("po_itemSet", {
-					PoNumber :  sObjectId
-				});
-				this._bindView("/" + sObjectPath);
-			}.bind(this));
-			/*this.getModel().metadataLoaded().then( function() {
+			this.getOwnerComponent().getModel().metadataLoaded().then( function() {	
+				var that = this;
 				var oTable = this.byId("table2");
-				//var oDModel = this.getView().getModel();
 				var oModel = new sap.ui.model.json.JSONModel();
 				var oFilter = new Filter("PoNumber", FilterOperator.EQ, sObjectId);
-				this.getView().getModel().read('/po_itemSet',{
+				this.getModel().read('/po_itemSet',{
 				filters: [oFilter],
 				success: function(oData){ 
-				sap.ui.getCore().setModel(oModel,"oJSONModel");
 				oModel.setData({
-					modelData: oData.results
+					tableData: oData.results
 				});
-				oTable.setModel(oModel)	
-				console.log('aaaaaa');
-				console.log(oData.results);
+				oTable.setModel(oModel, "myModel")	
+				console.log('aaaa');
+				console.log(oTable);
+				that.getOwnerComponent().setModel(oModel, "myModel")
+				console.log('bbbbbbb');
+				console.log(that.getOwnerComponent());
+				/*oTable.setModel(oModel, "OJSONModel")	
+				console.log(oTable);*/
 				},
 				error: function(oerr){
 				console.log("error"); }
 				});
-				this._bindView("/" + sObjectPath);
-				}.bind(this));*/
+				//this._bindView('/' + sObjectPath);
+				}.bind(this));
 						
 		},
 
@@ -113,7 +110,7 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound
 		 * @private
 		 */
-		_bindView : function (sObjectPath) {
+		/*_bindView : function (sObjectPath) {
 			var oViewModel = this.getModel("objectView"),
 				oDataModel = this.getModel();
 			this.getView().bindElement({
@@ -134,7 +131,7 @@ sap.ui.define([
 					}
 				}
 			});
-		},
+		},*/
 
 		_onBindingChange : function () {
 			var oView = this.getView(),

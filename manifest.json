@@ -19,7 +19,7 @@
 		"resources": "resources.json",
 		"dataSources": {
 			"mainService": {
-				"uri": "/northwind/V2/Northwind/Northwind.svc/",
+				"uri": "/sap/opu/odata/SAP/Z_DISPLAY_PO_SRV/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
@@ -101,7 +101,7 @@
 					"target": ["worklist"]
 				},
 				{
-					"pattern": "Products/{objectId}",
+					"pattern": "po_itemSet/{PoNumber}",
 					"name": "object",
 					"target": ["object"]
 				}

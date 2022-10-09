@@ -2,7 +2,8 @@
 	controllerName="mycompany.myapp.MyWorklistApp.controller.Worklist"
 	xmlns="sap.m"
 	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:semantic="sap.f.semantic">
+	xmlns:semantic="sap.f.semantic"
+	xmlns:smartTable="sap.ui.comp.smarttable">
 
 	<semantic:SemanticPage
 		id="page"
@@ -19,27 +20,31 @@
 				select=".onQuickFilter"
 				expandable="false">
 				<items>
+				<IconTabFilter
+						key="countAll"
+						showAll="true"
+						iconColor="Positive"
+						count="{worklistView>/countAll}"
+						text="{i18n>WorklistNoFilter}"/>
+					<IconTabSeparator/>
 					<IconTabFilter
 						key="inquiry"
 						icon="sap-icon://request"
 						iconColor="Positive"
 						count="{worklistView>/inquiry}"
 						text="{i18n>WorklistFilterInquiry}"/>
-					<IconTabSeparator/>
 					<IconTabFilter
 						key="contract"
 						icon="sap-icon://customer-briefing"
 						iconColor="Positive"
 						count="{worklistView>/contract}"
 						text="{i18n>WorklistFilterContract}"/>
-					<IconTabSeparator/>
 					<IconTabFilter
 						key="purchaseOrder"
 						icon="sap-icon://sales-document"
 						iconColor="Positive"
 						count="{worklistView>/purchaseOrder}"
 						text="{i18n>WorklistFilterPurchaseOrder}"/>
-					<IconTabSeparator/>
 					<IconTabFilter
 						key="delivery"
 						icon="sap-icon://cargo-train"
@@ -48,7 +53,7 @@
 						text="{i18n>WorklistFilterDelivery}"/>
 				</items>
 				<content>
-					<Table
+				<Table
 						id="table"
 						busyIndicatorDelay="{worklistView>/tableBusyDelay}"
 						growing="true"
@@ -56,7 +61,6 @@
 						noDataText="{worklistView>/tableNoDataText}"
 						updateFinished=".onUpdateFinished"
 						width="auto"
-						mode="MultiSelect"
 						items="{
 							path: '/purchase_orderSet',
 							sorter: {
@@ -64,6 +68,22 @@
 								descending: false
 							}
 						}">
+						<headerToolbar>
+						<Toolbar>
+						<Button
+						icon="sap-icon://excel-attachment"
+						text="Exporter en Excel"
+						type="Accept"
+						press=".onExport" />
+						<ToolbarSpacer/>
+						<SearchField 
+								id="searchField"
+								tooltip="{i18n>worklistSearchTooltip}"
+								search=".onSearch"
+								width="auto">
+							</SearchField>
+							</Toolbar>
+							</headerToolbar>
 						<columns>
 							<Column id="nameColumn">
 								<Text
@@ -77,15 +97,7 @@
 								<Text text="{i18n>TableSupplierColumnTitle}"/>
 							</Column>
 							<Column
-								id="UserNameColumn"
-								hAlign="Center"
-								demandPopin="true"
-								minScreenWidth="Tablet">
-								<Text text="{i18n>TableUserColumnTitle}"/>
-							</Column>
-							<Column
 								id="CompanyNameColumn"
-								hAlign="End"
 								demandPopin="true"
 								minScreenWidth="Tablet">
 								<Text text="{i18n>TableCompanyColumnTitle}"/>
@@ -93,8 +105,7 @@
 							
 							<Column id="LanguageColumn"
 								demandPopin="true"
-								minScreenWidth="Tablet"
-								hAlign="End">
+								minScreenWidth="Tablet">
 								<Text text="{i18n>TableLanguageColumnTitle}"/>
 							</Column>
 						</columns>
@@ -106,7 +117,6 @@
 								<ObjectIdentifier
 									title="{Ebeln}"/>
 								<ObjectIdentifier title="{Name1}" text="{Lifnr}"/>
-								<Text text = "{Ernam}"/>
 								<Text text = "{Bukrs}"/>
 								<ObjectStatus text = "{Spras}" state="{= ${Spras} === 'F' ? 'Success' : 'Error'}"/>
 							</cells>

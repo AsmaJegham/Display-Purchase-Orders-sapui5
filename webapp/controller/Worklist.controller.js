@@ -5,8 +5,9 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageToast",
-	"sap/m/MessageBox"
-], function (BaseController, JSONModel, formatter, Filter, FilterOperator, MessageToast, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/ui/export/Spreadsheet"
+], function (BaseController, JSONModel, formatter, Filter, FilterOperator, MessageToast, MessageBox, Spreadsheet) {
 	"use strict";
 
 	return BaseController.extend("mycompany.myapp.MyWorklistApp.controller.Worklist", {
@@ -41,7 +42,8 @@ sap.ui.define([
 				inquiry: 0,
 				contract: 0,
 				purchaseOrder: 0,
-				delivery: 0
+				delivery: 0,
+				countAll: 0
 			});
 			this.setModel(oViewModel, "worklistView");
 			// Create an object of filters
@@ -49,7 +51,8 @@ sap.ui.define([
 				"inquiry": [new Filter("Bstyp", FilterOperator.EQ, 'A')],
 				"purchaseOrder": [new Filter("Bstyp", FilterOperator.EQ, 'F')],
 				"contract": [new Filter("Bstyp", FilterOperator.EQ, 'K')],
-				"delivery": [new Filter("Bstyp", FilterOperator.EQ, 'L')]
+				"delivery": [new Filter("Bstyp", FilterOperator.EQ, 'L')],
+				"all": []
 			};
 
 			// Make sure, busy indication is showing immediately so there is no
@@ -83,6 +86,12 @@ sap.ui.define([
 			// only update the counter if the length is final and
 			// the table is not empty
 			if (iTotalItems && oTable.getBinding("items").isLengthFinal()) {
+				// Get the count for all the purchase orders and set the value to 'countAll' property
+				this.getModel().read("/purchase_orderSet/$count", {
+					success: function (oData) {
+						oViewModel.setProperty("/countAll", oData);
+					}
+				});
 				// Get the count for all the different types of purchase orders
 				this.getModel().read("/purchase_orderSet/$count", {
 					success: function (oData) {
@@ -167,15 +176,6 @@ sap.ui.define([
 		 * @param {sap.ui.model.Filter[]} aTableSearchState An array of filters for the search
 		 * @private
 		 */
-		_applySearch: function(aTableSearchState) {
-			var oTable = this.byId("table"),
-				oViewModel = this.getModel("worklistView");
-			oTable.getBinding("items").filter(aTableSearchState, "Application");
-			// changes the noDataText of the list in case there are no filter results
-			if (aTableSearchState.length !== 0) {
-				oViewModel.setProperty("/tableNoDataText", this.getResourceBundle().getText("worklistNoDataWithSearchText"));
-			}
-		},
 
 		/**
 		 * Displays an error message dialog. The displayed dialog is content density aware.
@@ -198,6 +198,90 @@ sap.ui.define([
 				sKey = oEvent.getParameter("selectedKey");
 			oBinding.filter(this._mFilters[sKey]);
 		},
+
+		// Search Box
+		onSearch : function (oEvent) {
+			if (oEvent.getParameters().refreshButtonPressed) {
+				// Search field's 'refresh' button has been pressed.
+				// This is visible if you select any master list item.
+				// In this case no new search is triggered, we only
+				// refresh the list binding.
+				this.onRefresh();
+			} else {
+				var aTableSearchState = [];
+				var sQuery = oEvent.getParameter("query");
+
+				if (sQuery && sQuery.length > 0) {
+				aTableSearchState = [new Filter("Ebeln", FilterOperator.Contains, sQuery),
+					new Filter("Name1", FilterOperator.Contains, sQuery.toUpperCase()),
+					new Filter("Name1", FilterOperator.Contains, sQuery.toLowerCase()), //à revoir
+					new Filter("Lifnr", FilterOperator.Contains, sQuery),
+					new Filter("Bukrs", FilterOperator.Contains, sQuery),
+					new Filter("Spras", FilterOperator.Contains, sQuery, false)];
+				var	oFilterToSetOnTheTable = new Filter({
+						filters: aTableSearchState,
+						and: false
+					});
+				}
+				this._applySearch(oFilterToSetOnTheTable);
+			}
+		},
+
+		_applySearch: function(aTableSearchState) {
+			var oTable = this.byId("table"),
+				oViewModel = this.getModel("worklistView");
+			oTable.getBinding("items").filter(aTableSearchState, "Application");
+			// changes the noDataText of the list in case there are no filter results
+			if (aTableSearchState.aFilters.length !== 0) {
+				oViewModel.setProperty("/tableNoDataText", this.getResourceBundle().getText("worklistNoDataWithSearchText"));
+			}
+		},
+
+
+		// Export as Excel File
+
+		onExport: function () {
+			const oBinding = this.byId("table").getBinding("items");
+			console.log(oBinding.getDownloadUrl());
+			const entryPath = "/sap.app/dataSources/mainService/uri";
+			const serviceUrl = this.getOwnerComponent().getManifestEntry(entryPath);
+			console.log(serviceUrl);
+			var oCols = [{name:"Numéro commande", property: "Ebeln"},
+			 {name:"Fournisseur", property: "Name1"},
+			 {name:"Société", property: "Bukrs"},
+			 {name:"Langue", property: "Spras"}]
+
+			var oSettings = {
+						workbook: { columns: oCols},
+						dataSource: {
+							type: "odata",
+							dataUrl: oBinding.getDownloadUrl() ,
+							serviceUrl: serviceUrl,
+							headers: oBinding.getModel().getHeaders(),
+							count: oBinding.getLength(),
+							//useBatch: true,
+							sizeLimit: 1000
+						},
+						worker: false,
+						fileName: "PurchaseOrders.xlsx",
+						//showProgress: true}
+					}
+			console.log(oSettings);
+			var oSheet = new Spreadsheet(oSettings);
+			oSheet.build().finally(function() {
+				oSheet.destroy();
+			});		
+
+			/*var oSpreadsheet = new sap.ui.export.Spreadsheet(oSettings);
+			console.log(oSpreadsheet);			
+			oSpreadsheet.onprogress = function(iValue) {
+				//debugger;
+				MessageToast.show("Export: %" + iValue + " completed");
+			};
+			oSpreadsheet.build()
+			  .then( function() { MessageToast.show("Export is finished"); })
+			  .catch( function(sMessage) { MessageToast.show("Export error: " + sMessage); });
+		*/	}
 
 	});
 

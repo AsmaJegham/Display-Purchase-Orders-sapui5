@@ -15,27 +15,26 @@
 		<semantic:titleHeading>
 			<Title text="{i18n>objectViewTitle}" />
 		</semantic:titleHeading>
-		<semantic:headerContent>
+		<!--<semantic:headerContent>
 			<FlexBox
 				alignItems="Start"
 				justifyContent="SpaceBetween">
 				<Panel backgroundDesign="Transparent">
 					<ObjectAttribute
 						title="{i18n>ObjectPurchaseOrderNumberText}"
-						text="{
-							path: 'PoNumber'}"/>
-						<!--	formatter: '.formatter.numberUnit'}"/> -->
+						text="{myModel>PoNumber}"/>
+							formatter: '.formatter.numberUnit'}"/> 
 				</Panel>
 
 			</FlexBox>
-		</semantic:headerContent>
+		</semantic:headerContent>-->
 		<semantic:content>
 			<l:VerticalLayout width="100%">
 			<Panel
 				backgroundDesign="Transparent"
 				headerText="{i18n>PoItemsTitle}">
 				<content>
-				<form:SimpleForm
+				<!--<form:SimpleForm
 						minWidth="1024"
 						maxContainerCols="2"
 						editable="false"
@@ -68,8 +67,8 @@
 							<Label text="{i18n>PoNetValueText}"/>
 							<Text text="{NetValue}"/>
 						</form:content>
-					</form:SimpleForm>
-				<!--<Table
+					</form:SimpleForm>-->
+					<Table
 						id="table2"
 						busyIndicatorDelay="{worklistView>/tableBusyDelay}"
 						growing="true"
@@ -78,13 +77,8 @@
 						updateFinished=".onUpdateFinished"
 						width="auto"
 						mode="MultiSelect"
-						items="{
-							path: '/po_itemSet',
-							sorter: {
-								path: 'PoNumber',
-								descending: false
-							}
-						}">
+						items=
+						"{myModel>/tableData}">
 						<columns>
 							<Column id="poItemNumberColumn">
 								<Text
@@ -156,20 +150,20 @@
 						<items>
 						<ColumnListItem>
 							<cells>
-							<Text text="{PoItem}"/>
-								<Text text="{ShortText}"/>
-								<Text text="{Material}"/>
-								<Text text="{CoCode}"/>
-								<Text text="{Plant}"/>
-								<Text text="{StoreLoc}"/>
-								<Text text="{MatGrp}"/>
-								<Text text="{TargetQty}"/>
-								<Text text="{NetPrice}"/>
-								<Text text="{NetValue}"/>
+							<Text text="{myModel>PoItem}"/>
+								<Text text="{myModel>ShortText}"/>
+								<Text text="{myModel>Material}"/>
+								<Text text="{myModel>CoCode}"/>
+								<Text text="{myModel>Plant}"/>
+								<Text text="{myModel>StoreLoc}"/>
+								<Text text="{myModel>MatGrp}"/>
+								<Text text="{myModel>TargetQty}"/>
+								<Text text="{myModel>NetPrice}"/>
+								<Text text="{myModel>NetValue}"/>
 							</cells>
 							</ColumnListItem>
 						</items>
-						</Table>-->
+						</Table>
 				</content>
 			</Panel>
 			</l:VerticalLayout>
