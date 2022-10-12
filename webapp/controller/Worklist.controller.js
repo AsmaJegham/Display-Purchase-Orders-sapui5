@@ -230,7 +230,7 @@ sap.ui.define([
 				oViewModel = this.getModel("worklistView");
 			oTable.getBinding("items").filter(aTableSearchState, "Application");
 			// changes the noDataText of the list in case there are no filter results
-			if (aTableSearchState.aFilters.length !== 0) {
+			if (aTableSearchState && aTableSearchState.aFilters.length !== 0) {
 				oViewModel.setProperty("/tableNoDataText", this.getResourceBundle().getText("worklistNoDataWithSearchText"));
 			}
 		},
