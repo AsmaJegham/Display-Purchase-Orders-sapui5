@@ -19,7 +19,7 @@
 		"resources": "resources.json",
 		"dataSources": {
 			"mainService": {
-				"uri": "/sap/opu/odata/SAP/Z_DISPLAY_PO_SRV/",
+				"uri": "https://localhost:8080/sap/opu/odata/SAP/Z_DISPLAY_PO_SRV/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",

@@ -2,16 +2,13 @@ sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/core/routing/History",
-	"mycompany/myapp/MyWorklistApp/model/formatter",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator"
 ], function (
-	BaseController, JSONModel, History, formatter, Filter, FilterOperator) {
+	BaseController, JSONModel, History, Filter, FilterOperator) {
 	"use strict";
 
 	return BaseController.extend("mycompany.myapp.MyWorklistApp.controller.Object", {
-
-		formatter: formatter,
 
 		/* =========================================================== */
 		/* lifecycle methods                                           */
@@ -78,6 +75,7 @@ sap.ui.define([
 			var sObjectId =  oEvent.getParameter("arguments").poNumber;
 			this.getOwnerComponent().getModel().metadataLoaded().then( function() {	
 				var that = this;
+				var oViewModel = this.getModel("objectView")
 				var oTable = this.byId("table2");
 				var oModel = new sap.ui.model.json.JSONModel();
 				var oFilter = new Filter("PoNumber", FilterOperator.EQ, sObjectId);
@@ -88,78 +86,15 @@ sap.ui.define([
 					tableData: oData.results
 				});
 				oTable.setModel(oModel, "myModel")	
-				console.log('aaaa');
-				console.log(oTable);
 				that.getOwnerComponent().setModel(oModel, "myModel")
-				console.log('bbbbbbb');
-				console.log(that.getOwnerComponent());
-				/*oTable.setModel(oModel, "OJSONModel")	
-				console.log(oTable);*/
 				},
 				error: function(oerr){
 				console.log("error"); }
 				});
-				//this._bindView('/' + sObjectPath);
+				oViewModel.setProperty("/busy", false);	
 				}.bind(this));
-						
+					
 		},
-
-		/**
-		 * Binds the view to the object path.
-		 * @function
-		 * @param {string} sObjectPath path to the object to be bound
-		 * @private
-		 */
-		/*_bindView : function (sObjectPath) {
-			var oViewModel = this.getModel("objectView"),
-				oDataModel = this.getModel();
-			this.getView().bindElement({
-				path: sObjectPath,
-				events: {
-					change: this._onBindingChange.bind(this),
-					dataRequested: function () {
-						oDataModel.metadataLoaded().then(function () {
-							// Busy indicator on view should only be set if metadata is loaded,
-							// otherwise there may be two busy indications next to each other on the
-							// screen. This happens because route matched handler already calls '_bindView'
-							// while metadata is loaded.
-							oViewModel.setProperty("/busy", true);
-						});
-					},
-					dataReceived: function () {
-						oViewModel.setProperty("/busy", false);
-					}
-				}
-			});
-		},*/
-
-		_onBindingChange : function () {
-			var oView = this.getView(),
-				oViewModel = this.getModel("objectView"),
-				oElementBinding = oView.getElementBinding();
-
-			// No data for the binding
-			if (!oElementBinding.getBoundContext()) {
-				this.getRouter().getTargets().display("objectNotFound");
-				return;
-			}
-
-			var oResourceBundle = this.getResourceBundle(),
-				oObject = oView.getBindingContext().getObject(),
-				sObjectId = oObject.PoNumber;
-
-			oViewModel.setProperty("/busy", false);
-			/*oViewModel.setProperty("/shareSendEmailSubject",
-			oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));*/
-			/*oViewModel.setProperty("/shareSendEmailMessage",
-			oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));*/
-
-			// Update the comments in the list
-			/*var oList = this.byId("idCommentsList");
-			var oBinding = oList.getBinding("items");
-			oBinding.filter(new Filter("poNumber", FilterOperator.EQ, sObjectId));*/
-		},
-
 	});
 
 });

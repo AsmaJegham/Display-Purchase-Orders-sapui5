@@ -15,59 +15,11 @@
 		<semantic:titleHeading>
 			<Title text="{i18n>objectViewTitle}" />
 		</semantic:titleHeading>
-		<!--<semantic:headerContent>
-			<FlexBox
-				alignItems="Start"
-				justifyContent="SpaceBetween">
-				<Panel backgroundDesign="Transparent">
-					<ObjectAttribute
-						title="{i18n>ObjectPurchaseOrderNumberText}"
-						text="{myModel>PoNumber}"/>
-							formatter: '.formatter.numberUnit'}"/> 
-				</Panel>
-
-			</FlexBox>
-		</semantic:headerContent>-->
 		<semantic:content>
 			<l:VerticalLayout width="100%">
 			<Panel
-				backgroundDesign="Transparent"
-				headerText="{i18n>PoItemsTitle}">
+				backgroundDesign="Transparent">
 				<content>
-				<!--<form:SimpleForm
-						minWidth="1024"
-						maxContainerCols="2"
-						editable="false"
-						layout="ResponsiveGridLayout"
-						labelSpanL="3"
-						labelSpanM="3"
-						emptySpanL="4"
-						emptySpanM="4"
-						columnsL="1"
-						columnsM="1">
-						<form:content>
-							<Label text="{i18n>PoItemNumberText}"/>
-							<Text text="{PoItem}"/>
-							<Label text="{i18n>PoDesignationText}"/>
-							<Text text="{ShortText}"/>
-							<Label text="{i18n>PoArticleNumberText}"/>
-							<Text text="{Material}"/>
-							<Label text="{i18n>PoCompanyText}"/>
-							<Text text="{CoCode}"/>
-							<Label text="{i18n>PoPlantText}"/>
-							<Text text="{Plant}"/>
-							<Label text="{i18n>PoStoreLocText}"/>
-							<Text text="{StoreLoc}"/>
-							<Label text="{i18n>PoMatGrpText}"/>
-							<Text text="{MatGrp}"/>
-							<Label text="{i18n>PoTargetQtyText}"/>
-							<Text text="{TargetQty}"/>
-							<Label text="{i18n>PoNetPriceText}"/>
-							<Text text="{NetPrice}"/>
-							<Label text="{i18n>PoNetValueText}"/>
-							<Text text="{NetValue}"/>
-						</form:content>
-					</form:SimpleForm>-->
 					<Table
 						id="table2"
 						busyIndicatorDelay="{worklistView>/tableBusyDelay}"
@@ -76,7 +28,6 @@
 						noDataText="{worklistView>/tableNoDataText}"
 						updateFinished=".onUpdateFinished"
 						width="auto"
-						mode="MultiSelect"
 						items=
 						"{myModel>/tableData}">
 						<columns>

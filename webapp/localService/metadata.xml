@@ -19,10 +19,10 @@
 <EntityType Name="po_item" sap:content-version="1">
 <Key>
 <PropertyRef Name="PoNumber"/>
-<!--<PropertyRef Name="PoItem"/>-->
+<PropertyRef Name="PoItem"/>
 </Key>
 <Property Name="PoNumber" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Purchasing Doc."/>
-<Property Name="PoItem" Type="Edm.String" MaxLength="5" sap:label="Item"/>  <!--  Nullable="false" -->
+<Property Name="PoItem" Type="Edm.String" Nullable="false" MaxLength="5" sap:label="Item"/>  <!--  Nullable="false" -->
 <Property Name="ShortText" Type="Edm.String" MaxLength="40" sap:label="Short Text"/>
 <Property Name="Material" Type="Edm.String" MaxLength="18" sap:label="Cod.Material"/>
 <Property Name="CoCode" Type="Edm.String" MaxLength="4" sap:label="Company Code"/>

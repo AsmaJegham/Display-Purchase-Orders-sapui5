@@ -1,18 +1,15 @@
 sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
-	"mycompany/myapp/MyWorklistApp/model/formatter",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageToast",
 	"sap/m/MessageBox",
 	"sap/ui/export/Spreadsheet"
-], function (BaseController, JSONModel, formatter, Filter, FilterOperator, MessageToast, MessageBox, Spreadsheet) {
+], function (BaseController, JSONModel, Filter, FilterOperator, MessageToast, MessageBox, Spreadsheet) {
 	"use strict";
 
 	return BaseController.extend("mycompany.myapp.MyWorklistApp.controller.Worklist", {
-
-		formatter: formatter,
 
 		/* =========================================================== */
 		/* lifecycle methods                                           */
@@ -214,10 +211,11 @@ sap.ui.define([
 				if (sQuery && sQuery.length > 0) {
 				aTableSearchState = [new Filter("Ebeln", FilterOperator.Contains, sQuery),
 					new Filter("Name1", FilterOperator.Contains, sQuery.toUpperCase()),
-					new Filter("Name1", FilterOperator.Contains, sQuery.toLowerCase()), //à revoir
+					new Filter("Name1", FilterOperator.Contains, sQuery.toLowerCase()), 
 					new Filter("Lifnr", FilterOperator.Contains, sQuery),
 					new Filter("Bukrs", FilterOperator.Contains, sQuery),
-					new Filter("Spras", FilterOperator.Contains, sQuery, false)];
+					new Filter("Spras", FilterOperator.Contains, sQuery.toUpperCase()),
+					new Filter("Spras", FilterOperator.Contains, sQuery.toLowerCase())];
 				var	oFilterToSetOnTheTable = new Filter({
 						filters: aTableSearchState,
 						and: false
@@ -237,51 +235,43 @@ sap.ui.define([
 			}
 		},
 
+		createColumnConfig: function() {
+			return [{label:"Numéro commande", property: "Ebeln"},
+			{label:"Fournisseur", property: ["Name1", "Lifnr"], template: '{0}, {1}', width: 30},
+			{label:"Société", property: "Bukrs"},
+			{label:"Langue", property: "Spras"}]},
 
 		// Export as Excel File
 
 		onExport: function () {
-			const oBinding = this.byId("table").getBinding("items");
+			const oBinding = this._oTable.getBinding("items");
 			console.log(oBinding.getDownloadUrl());
 			const entryPath = "/sap.app/dataSources/mainService/uri";
 			const serviceUrl = this.getOwnerComponent().getManifestEntry(entryPath);
 			console.log(serviceUrl);
-			var oCols = [{name:"Numéro commande", property: "Ebeln"},
-			 {name:"Fournisseur", property: "Name1"},
-			 {name:"Société", property: "Bukrs"},
-			 {name:"Langue", property: "Spras"}]
+			var oCols = this.createColumnConfig()
 
 			var oSettings = {
-						workbook: { columns: oCols},
-						dataSource: {
+						workbook: { columns: oCols, 
+									context: {sheetName: "PurchaseOrders"}
+								},
+						dataSource:{
 							type: "odata",
 							dataUrl: oBinding.getDownloadUrl() ,
 							serviceUrl: serviceUrl,
 							headers: oBinding.getModel().getHeaders(),
 							count: oBinding.getLength(),
-							//useBatch: true,
-							sizeLimit: 1000
-						},
+							sizeLimit: 1000}
+						,
 						worker: false,
-						fileName: "PurchaseOrders.xlsx",
-						//showProgress: true}
-					}
-			console.log(oSettings);
-			var oSheet = new Spreadsheet(oSettings);
-			oSheet.build().finally(function() {
-				oSheet.destroy();
-			});		
-
-			/*var oSpreadsheet = new sap.ui.export.Spreadsheet(oSettings);
+						fileName: "PurchaseOrders.xlsx"}
+			var oSpreadsheet = new Spreadsheet(oSettings);
 			console.log(oSpreadsheet);			
-			oSpreadsheet.onprogress = function(iValue) {
-				//debugger;
-				MessageToast.show("Export: %" + iValue + " completed");
-			};
 			oSpreadsheet.build()
-			  .then( function() { MessageToast.show("Export is finished"); })
-			  .catch( function(sMessage) { MessageToast.show("Export error: " + sMessage); });
-		*/	}
+			  .then( function() { MessageToast.show("Exportation terminée");
+			  oSpreadsheet.destroy(); })
+			  .catch( function(sMessage) { MessageToast.show("Erreur d'exportation: " + sMessage); });
+			}
 
 	});
 
